@@ -5,15 +5,8 @@ class TmuxPatched < Formula
   homepage "https://tmux.github.io/"
 
   stable do
-    url "https://github.com/tmux/tmux/releases/download/2.1/tmux-2.1.tar.gz"
-    sha256 "31564e7bf4bcef2defb3cb34b9e596bd43a3937cad9e5438701a81a5a9af6176"
-
-    patch do
-      # This fixes the Tmux 2.1 update that broke the ability to use select-pane [-LDUR]
-      # to switch panes when in a maximized pane https://github.com/tmux/tmux/issues/150#issuecomment-149466158
-      url "https://github.com/tmux/tmux/commit/a05c27a7e1c4d43709817d6746a510f16c960b4b.diff"
-      sha256 "2a60a63f0477f2e3056d9f76207d4ed905de8a9ce0645de6c29cf3f445bace12"
-    end
+    url "https://github.com/tmux/tmux/releases/download/2.3/tmux-2.3.tar.gz"
+    sha256 "55313e132f0f42de7e020bf6323a1939ee02ab79c48634aa07475db41573852b"
   end
 
   head do
@@ -27,10 +20,15 @@ class TmuxPatched < Formula
   depends_on 'pkg-config' => :build
   depends_on 'libevent'
 
+  resource "completion" do
+    url "https://raw.githubusercontent.com/imomaliev/tmux-bash-completion/homebrew_1.0.0/completions/tmux"
+    sha256 "05e79fc1ecb27637dc9d6a52c315b8f207cf010cdcee9928805525076c9020ae"
+  end
+
   def patches
     [
-      "https://gist.githubusercontent.com/waltarix/1399751/raw/8c5f0018c901f151d39680ef85de6d22649b687a/tmux-ambiguous-width-cjk.patch",
-      "https://gist.githubusercontent.com/waltarix/1399751/raw/dc11f40266d9371e730eff41c64a70c84d34484a/tmux-pane-border-ascii.patch"
+      "https://gist.githubusercontent.com/waltarix/1399751/raw/6c8f54ec8e55823fb99b644a8a5603847cb60882/tmux-pane-border-ascii.patch",
+      "https://gist.githubusercontent.com/z80oolong/e65baf0d590f62fab8f4f7c358cbcc34/raw/382c4794710940605681b490a534a616633eba55/tmux-2.3-fix.diff"
     ]
   end
 
@@ -44,8 +42,8 @@ class TmuxPatched < Formula
 
     system "make", "install"
 
-    bash_completion.install "examples/bash_completion_tmux.sh" => "tmux"
-    pkgshare.install "examples"
+    pkgshare.install "example_tmux.conf"
+    bash_completion.install resource("completion")
   end
 
   def caveats; <<-EOS.undent
