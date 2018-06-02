@@ -1,13 +1,10 @@
 require 'formula'
 
-class TmuxPatched < Formula
+class TmuxCjkPatched < Formula
   desc "Terminal multiplexer"
   homepage "https://tmux.github.io/"
-
-  stable do
-    url "https://github.com/tmux/tmux/releases/download/2.3/tmux-2.3.tar.gz"
-    sha256 "55313e132f0f42de7e020bf6323a1939ee02ab79c48634aa07475db41573852b"
-  end
+  url "https://github.com/tmux/tmux/releases/download/2.3/tmux-2.3.tar.gz"
+  sha256 "55313e132f0f42de7e020bf6323a1939ee02ab79c48634aa07475db41573852b"
 
   head do
     url "https://github.com/tmux/tmux.git"
@@ -35,10 +32,14 @@ class TmuxPatched < Formula
   def install
     system "sh", "autogen.sh" if build.head?
 
+    args = %W[
+      --disable-Dependency-tracking
+      --prefix=#{prefix}
+      --sysconfdir=#{etc}
+    ]
+
     ENV.append "LDFLAGS", "-lresolv"
-    system "./configure", "--disable-dependency-tracking",
-                          "--prefix=#{prefix}",
-                          "--sysconfdir=#{etc}"
+    system "./configure", *args
 
     system "make", "install"
 
@@ -46,9 +47,9 @@ class TmuxPatched < Formula
     bash_completion.install resource("completion")
   end
 
-  def caveats; <<-EOS.undent
+  def caveats; <<~EOS
     Example configurations have been installed to:
-      #{opt_pkgshare}/examples
+      #{opt_pkgshare}
     EOS
   end
 
